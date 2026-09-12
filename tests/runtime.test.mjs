@@ -716,6 +716,26 @@ test("write task output focuses on the Codex result without generic follow-up hi
   assert.equal(result.stdout, "Handled the requested task.\nTask prompt accepted.\n");
 });
 
+test("write task starts Codex with full access and no approval prompts", () => {
+  const repo = makeTempDir();
+  const binDir = makeTempDir();
+  const statePath = path.join(binDir, "fake-codex-state.json");
+  installFakeCodex(binDir);
+  initGitRepo(repo);
+
+  const result = run("node", [SCRIPT, "task", "--write", "fix the failing test"], {
+    cwd: repo,
+    env: buildEnv(binDir)
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const fakeState = JSON.parse(fs.readFileSync(statePath, "utf8"));
+  assert.deepEqual(fakeState.lastThreadStart, {
+    approvalPolicy: "never",
+    sandbox: "danger-full-access"
+  });
+});
+
 test("task --resume acts like --resume-last without leaking the flag into the prompt", () => {
   const repo = makeTempDir();
   const binDir = makeTempDir();
@@ -782,6 +802,23 @@ test("task forwards model selection and reasoning effort to app-server turn/star
   const fakeState = JSON.parse(fs.readFileSync(statePath, "utf8"));
   assert.equal(fakeState.lastTurnStart.model, "gpt-5.3-codex-spark");
   assert.equal(fakeState.lastTurnStart.effort, "low");
+});
+
+test("task maps the Astra alias to the GPT-6 Astra model ID", () => {
+  const repo = makeTempDir();
+  const binDir = makeTempDir();
+  const statePath = path.join(binDir, "fake-codex-state.json");
+  installFakeCodex(binDir);
+  initGitRepo(repo);
+
+  const result = run("node", [SCRIPT, "task", "--model", "astra", "solve the hard problem"], {
+    cwd: repo,
+    env: buildEnv(binDir)
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const fakeState = JSON.parse(fs.readFileSync(statePath, "utf8"));
+  assert.equal(fakeState.lastTurnStart.model, "gpt-6-astra");
 });
 
 for (const effort of ["max", "ultra"]) {

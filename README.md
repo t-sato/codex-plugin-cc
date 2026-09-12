@@ -147,6 +147,7 @@ Examples:
 /codex:rescue --resume apply the top fix from the last run
 /codex:rescue --model gpt-5.4-mini --effort medium investigate the flaky integration test
 /codex:rescue --model spark fix the issue quickly
+/codex:rescue --model astra solve the hard problem
 /codex:rescue --background investigate the regression
 ```
 
@@ -161,6 +162,8 @@ Ask Codex to redesign the database connection to be more resilient.
 - if you do not pass `--model` or `--effort`, Codex chooses its own defaults.
 - `--effort` accepts `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, `max`, and `ultra`. Which of those a given model actually supports is decided by Codex, not by the plugin — run `codex debug models` to see the reasoning levels each model advertises.
 - if you say `spark`, the plugin maps that to `gpt-5.3-codex-spark`
+- if you say `astra`, the plugin maps that to `gpt-6-astra`
+- edit-oriented rescue runs use `danger-full-access`; review, diagnosis, and research requests without edits remain read-only
 - follow-up rescue requests can continue the latest Codex task in the repo
 
 ### `/codex:transfer`

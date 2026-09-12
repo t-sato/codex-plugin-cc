@@ -103,7 +103,7 @@ test("rescue command absorbs continue semantics", () => {
   assert.doesNotMatch(rescue, /^context:\s*fork\b/m);
   assert.match(rescue, /--background\|--wait/);
   assert.match(rescue, /--resume\|--fresh/);
-  assert.match(rescue, /--model <model\|spark>/);
+  assert.match(rescue, /--model <model\|spark\|astra>/);
   assert.match(rescue, /--effort <none\|minimal\|low\|medium\|high\|xhigh\|max\|ultra>/);
   assert.match(rescue, /task-resume-candidate --json/);
   assert.match(rescue, /AskUserQuestion/);
@@ -115,6 +115,7 @@ test("rescue command absorbs continue semantics", () => {
   assert.match(rescue, /`--model` and `--effort` are runtime-selection flags/i);
   assert.match(rescue, /Leave `--effort` unset unless the user explicitly asks for a specific reasoning effort/i);
   assert.match(rescue, /If they ask for `spark`, map it to `gpt-5\.3-codex-spark`/i);
+  assert.match(rescue, /If they ask for `astra`, map it to `gpt-6-astra`/i);
   assert.match(rescue, /If the request includes `--resume`, do not ask whether to continue/i);
   assert.match(rescue, /If the request includes `--fresh`, do not ask whether to continue/i);
   assert.match(rescue, /If the user chooses continue, add `--resume`/i);
@@ -135,6 +136,7 @@ test("rescue command absorbs continue semantics", () => {
   assert.match(agent, /Leave `--effort` unset unless the user explicitly requests a specific reasoning effort/i);
   assert.match(agent, /Leave model unset by default/i);
   assert.match(agent, /If the user asks for `spark`, map that to `--model gpt-5\.3-codex-spark`/i);
+  assert.match(agent, /If the user asks for `astra`, map that to `--model gpt-6-astra`/i);
   assert.match(agent, /If the user asks for a concrete model name such as `gpt-5\.4-mini`, pass it through with `--model`/i);
   assert.match(agent, /Return the stdout of the `codex-companion` command exactly as-is/i);
   assert.match(agent, /If the Bash call fails or Codex cannot be invoked, return nothing/i);
@@ -148,6 +150,8 @@ test("rescue command absorbs continue semantics", () => {
   assert.match(runtimeSkill, /Leave `--effort` unset unless the user explicitly requests a specific effort/i);
   assert.match(runtimeSkill, /Leave model unset by default/i);
   assert.match(runtimeSkill, /Map `spark` to `--model gpt-5\.3-codex-spark`/i);
+  assert.match(runtimeSkill, /Map `astra` to `--model gpt-6-astra`/i);
+  assert.match(runtimeSkill, /Default to a full-access Codex run by adding `--write`/i);
   assert.match(runtimeSkill, /If the forwarded request includes `--background` or `--wait`, treat that as Claude-side execution control only/i);
   assert.match(runtimeSkill, /Strip it before calling `task`/i);
   assert.match(runtimeSkill, /`--effort`: accepted values are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, `max`, `ultra`/i);
@@ -157,6 +161,7 @@ test("rescue command absorbs continue semantics", () => {
   assert.match(readme, /if you do not pass `--model` or `--effort`, Codex chooses its own defaults/i);
   assert.match(readme, /--model gpt-5\.4-mini --effort medium/i);
   assert.match(readme, /`spark`, the plugin maps that to `gpt-5\.3-codex-spark`/i);
+  assert.match(readme, /`astra`, the plugin maps that to `gpt-6-astra`/i);
   assert.match(readme, /continue a previous Codex task/i);
   assert.match(readme, /### `\/codex:setup`/);
   assert.match(readme, /### `\/codex:review`/);
