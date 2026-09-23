@@ -821,6 +821,46 @@ test("task maps the Astra alias to the GPT-6 Astra model ID", () => {
   assert.equal(fakeState.lastTurnStart.model, "gpt-6-astra");
 });
 
+for (const name of ["sol", "luna"]) {
+  test(`task maps the ${name} alias to its GPT-6 model ID`, () => {
+    const repo = makeTempDir();
+    const binDir = makeTempDir();
+    const statePath = path.join(binDir, "fake-codex-state.json");
+    installFakeCodex(binDir);
+    initGitRepo(repo);
+
+    const result = run("node", [SCRIPT, "task", "--model", name, "diagnose the issue"], {
+      cwd: repo,
+      env: buildEnv(binDir)
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    const fakeState = JSON.parse(fs.readFileSync(statePath, "utf8"));
+    assert.equal(fakeState.lastTurnStart.model, `gpt-6-${name}`);
+  });
+
+  test(`review maps the ${name} alias to its GPT-6 model ID`, () => {
+    const repo = makeTempDir();
+    const binDir = makeTempDir();
+    const statePath = path.join(binDir, "fake-codex-state.json");
+    installFakeCodex(binDir);
+    initGitRepo(repo);
+    fs.writeFileSync(path.join(repo, "README.md"), "before\n");
+    run("git", ["add", "README.md"], { cwd: repo });
+    run("git", ["commit", "-m", "init"], { cwd: repo });
+    fs.writeFileSync(path.join(repo, "README.md"), "after\n");
+
+    const result = run("node", [SCRIPT, "review", "--model", name], {
+      cwd: repo,
+      env: buildEnv(binDir)
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    const fakeState = JSON.parse(fs.readFileSync(statePath, "utf8"));
+    assert.equal(fakeState.lastThreadStartModel, `gpt-6-${name}`);
+  });
+}
+
 for (const effort of ["max", "ultra"]) {
   test(`task forwards ${effort} reasoning effort to app-server turn/start`, () => {
     const repo = makeTempDir();

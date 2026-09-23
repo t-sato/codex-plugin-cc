@@ -93,6 +93,7 @@ Examples:
 ```bash
 /codex:review
 /codex:review --base main
+/codex:review --model sol
 /codex:review --background
 ```
 
@@ -118,6 +119,7 @@ Examples:
 ```bash
 /codex:adversarial-review
 /codex:adversarial-review --base main challenge whether this was the right caching and retry design
+/codex:adversarial-review --model luna look for race conditions
 /codex:adversarial-review --background look for race conditions and question the chosen approach
 ```
 
@@ -148,6 +150,8 @@ Examples:
 /codex:rescue --model gpt-5.4-mini --effort medium investigate the flaky integration test
 /codex:rescue --model spark fix the issue quickly
 /codex:rescue --model astra solve the hard problem
+/codex:rescue --model sol implement the feature
+/codex:rescue --model luna summarize the test failures
 /codex:rescue --background investigate the regression
 ```
 
@@ -160,9 +164,10 @@ Ask Codex to redesign the database connection to be more resilient.
 **Notes:**
 
 - if you do not pass `--model` or `--effort`, Codex chooses its own defaults.
-- `--effort` accepts `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, `max`, and `ultra`. Which of those a given model actually supports is decided by Codex, not by the plugin — run `codex debug models` to see the reasoning levels each model advertises.
+- `--effort` accepts `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, `max`, and `ultra`. The active Codex instance decides which levels a model supports.
 - if you say `spark`, the plugin maps that to `gpt-5.3-codex-spark`
 - if you say `astra`, the plugin maps that to `gpt-6-astra`
+- if you say `sol` or `luna`, the plugin maps them to `gpt-6-sol` or `gpt-6-luna`
 - edit-oriented rescue runs use `danger-full-access`; review, diagnosis, and research requests without edits remain read-only
 - follow-up rescue requests can continue the latest Codex task in the repo
 
